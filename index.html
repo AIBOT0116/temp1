@@ -79,11 +79,11 @@
     <script>
         document.getElementById('videoForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const url = encodeURIComponent(document.getElementById('url').value.trim());
-            const keyId = encodeURIComponent(document.getElementById('keyId').value.trim());
-            const key = encodeURIComponent(document.getElementById('key').value.trim());
+            const url = document.getElementById('url').value.trim();
+            const keyId = document.getElementById('keyId').value.trim();
+            const key = document.getElementById('key').value.trim();
 
-            // Build query string conditionally
+            // Build query string manually, no encoding
             let query = `play.html?url=${url}`;
             if (keyId && key) {
                 query += `&keyId=${keyId}&key=${key}`;
