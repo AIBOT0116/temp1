@@ -1,53 +1,236 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Shaka Video Player</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
-  <style>
-    video { width: 100%; height: auto; background: black; }
-  </style>
-</head>
-<body>
-  <h2>Shaka Player</h2>
-  <video id="video" controls autoplay></video>
-
-  <script>
-    async function initPlayer() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const manifestUri = urlParams.get('url');
-      const keyId = urlParams.get('keyId');
-      const key = urlParams.get('key');
-
-      if (!manifestUri || !keyId || !key) {
-        alert("Missing video data in URL!");
-        return;
-      }
-
-      const video = document.getElementById('video');
-      const player = new shaka.Player(video);
-
-      // Install polyfills
-      shaka.polyfill.installAll();
-
-      // Configure ClearKey DRM
-      player.configure({
-        drm: {
-          clearKeys: {
-            [keyId]: key
-          }
+    <title>Zee Bangla - Free</title>
+    <link rel="shortcut icon" href="https://www.zee5.com/images/ZEE5_logo.svg?ver=4.18.2" type="image/x-icon">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.14.9/dist/shaka-player.ui.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/shaka-player@4.14.9/dist/controls.min.css" rel="stylesheet">
+    <style>
+        .shaka-overflow-menu {
+            background-color: rgb(0, 0, 0, .3);
+            color: #999;
+            backdrop-filter: blur(5px);
+            border-radius: 10px
         }
-      });
 
-      try {
-        await player.load(decodeURIComponent(manifestUri));
-        console.log("The video has been loaded!");
-      } catch (e) {
-        console.error("Error loading video", e);
-      }
-    }
+        .shaka-overflow-menu button {
+            padding: 7px 6px
+        }
 
-    document.addEventListener('DOMContentLoaded', initPlayer);
-  </script>
+        .shaka-overflow-menu button:hover {
+            background-color: rgb(45, 45, 45, .3)
+        }
+
+        .shaka-overflow-button-label {
+            color: #f5f5f5
+        }
+
+        .shaka-current-selection-span {
+            color: #cacaca
+        }
+
+        .material-icons-round {
+            color: #e6e6e6
+        }
+
+        .shaka-settings-menu {
+            background-color: rgba(0, 0, 0, .3);
+            color: #fff;
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 10px 0
+        }
+
+        .shaka-settings-menu button {
+            color: #fff
+        }
+
+        .shaka-settings-menu button:hover {
+            background-color: rgba(45, 45, 45, .3)
+        }
+
+        .shaka-spinner-path {
+            stroke: #fff
+        }
+
+        #text-overlay {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 20px;
+            color: rgb(255 255 255);
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #text-overlay span {
+            font-size: 12px;
+            background-color: rgb(255 255 255 / 30%);
+            padding: 3px 5px;
+            border-radius: 3px;
+        }
+
+        .views {
+            position: absolute;
+            top: 67px;
+            right: 40px;
+            color: rgb(255 255 255 / 90%);
+            pointer-events: none;
+            z-index: 10;
+            font-size: 15px;
+        }
+
+        /* Portrait and Landscape */
+        @media only screen and (min-width: 320px) and (max-width: 940px) {
+            #text-overlay {
+                font-size: 15px;
+                gap: 3px;
+            }
+
+            #text-overlay span {
+                font-size: 10px;
+            }
+
+            .views {
+                font-size: 12px;
+                top: 59px;
+            }
+
+            .shaka-play-button {
+                padding: calc(12% / 2);
+            }
+        }
+    </style>
+</head>
+
+<body bgcolor="black" style="margin:0">
+    <div data-shaka-player-container style="position:absolute;top:0;left:0;width:100%;height:100%">
+        <video autoplay playsinline data-shaka-player id="video"
+            poster="https://img.freepik.com/glowing-blue-color-play-button-black-background-play-right-navigate-triangle-arrow-start-button-neon-glowing-play-button-with-neon-circle_799261-1204.jpg"
+            style="width:100%;height:100%"></video>
+        <div id="text-overlay">FreeStream<span>Live</span></div>
+        <div class="views"><span id="view">0</span>Cr Views</div>
+    </div>
+
+    <script>
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const manifestUrl = decodeURIComponent(urlParams.get('url') || '');
+            const keyId = urlParams.get('keyId');
+            const key = urlParams.get('key');
+
+            if (!manifestUrl || !keyId || !key) {
+                alert('Missing video information in URL!');
+                return;
+            }
+
+            const video = document.getElementById("video");
+            const ui = video.ui;
+            const controls = ui.getControls();
+            const player = controls.getPlayer();
+
+            player.configure({
+                drm: {
+                    clearKeys: {
+                        [keyId]: key
+                    }
+                },
+                streaming: {
+                    startAtSegmentBoundary: true,
+                    ignoreTextStreamFailures: true,
+                    rebufferingGoal: 2,
+                    bufferingGoal: 30,
+                    bufferBehind: 60,
+                    autoLowLatencyMode: true,
+                    lowLatencyMode: true,
+                    useNativeHlsOnSafari: true,
+                    jumpLargeGaps: true,
+                    inaccurateManifestTolerance: 0.3,
+                    stallEnabled: false
+                },
+                manifest: {
+                    dash: {
+                        ignoreMinBufferTime: true,
+                        autoCorrectDrift: true
+                    }
+                },
+                abr: {
+                    enabled: true,
+                    minBandwidth: 1000000,
+                    maxBandwidth: 5000000,
+                    defaultEstimate: 2000000,
+                    adaptive: {
+                        initialBitrate: 1000000,
+                        bitrateSafetyMargin: 1.2
+                    }
+                }
+            });
+
+            ui.configure({
+                controlPanelElements: ["play_pause", "mute", "volume", "spacer", "time_and_duration", "quality", "fullscreen", "overflow_menu"],
+                volumeBarColors: {
+                    base: 'rgba(50, 50, 50, 0.4)',
+                    level: 'rgba(225, 225, 225, 0.8)'
+                },
+                seekBarColors: {
+                    base: 'rgba(100, 100, 100, 0.6)',
+                    buffered: 'rgba(200, 200, 200, 0.5)',
+                    played: 'rgba(229, 9, 20, 1)'
+                },
+                enableKeyboardPlaybackControls: true
+            });
+
+            window.player = player;
+            window.ui = ui;
+
+            player.addEventListener("error", onPlayerErrorEvent);
+            controls.addEventListener("error", onUIErrorEvent);
+
+            try {
+                await player.load(manifestUrl);
+                console.log("The video has been loaded!");
+            } catch (error) {
+                onPlayerError(error);
+            }
+        }
+
+        function onPlayerErrorEvent(event) {
+            onPlayerError(event.detail);
+        }
+
+        function onPlayerError(error) {
+            console.error("Player Error - Code:", error.code, "Details:", error);
+        }
+
+        function onUIErrorEvent(event) {
+            onPlayerError(event.detail);
+        }
+
+        function initFailed(error) {
+            console.error("Unable to load the Shaka UI library!", error);
+        }
+
+        document.addEventListener("shaka-ui-loaded", init);
+        document.addEventListener("shaka-ui-load-failed", initFailed);
+
+        function updateViews() {
+            const min = 1.01;
+            const max = 1.99;
+            const views = (Math.random() * (max - min) + min).toFixed(2);
+            document.getElementById('view').textContent = views;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateViews();
+            setInterval(updateViews, 5000);
+        });
+    </script>
 </body>
+
 </html>
