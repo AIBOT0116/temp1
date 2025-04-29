@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shaka Video Player</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+  <style>
+    video { width: 100%; height: auto; background: black; }
+  </style>
+</head>
+<body>
+  <h2>Shaka Player</h2>
+  <video id="video" controls autoplay></video>
+
+  <script>
+    async function initPlayer() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const manifestUri = urlParams.get('url');
+      const keyId = urlParams.get('keyId');
+      const key = urlParams.get('key');
+
+      if (!manifestUri || !keyId || !key) {
+        alert("Missing video data in URL!");
+        return;
+      }
+
+      const video = document.getElementById('video');
+      const player = new shaka.Player(video);
+
+      // Install polyfills
+      shaka.polyfill.installAll();
+
+      // Configure ClearKey DRM
+      player.configure({
+        drm: {
+          clearKeys: {
+            [keyId]: key
+          }
+        }
+      });
+
+      try {
+        await player.load(decodeURIComponent(manifestUri));
+        console.log("The video has been loaded!");
+      } catch (e) {
+        console.error("Error loading video", e);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initPlayer);
+  </script>
+</body>
+</html>
