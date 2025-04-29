@@ -120,13 +120,13 @@
 
     <script>
         async function init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const manifestUrl = decodeURIComponent(urlParams.get('url') || '');
-            const keyId = urlParams.get('keyId');
-            const key = urlParams.get('key');
+            const params = new URLSearchParams(window.location.search);
+            const manifestUrl = params.get('url');
+            const keyId = params.get('keyId');
+            const key = params.get('key');
 
-            if (!manifestUrl || !keyId || !key) {
-                alert('Missing video information in URL!');
+            if (!manifestUrl) {
+                alert('Manifest URL is missing!');
                 return;
             }
 
@@ -135,12 +135,10 @@
             const controls = ui.getControls();
             const player = controls.getPlayer();
 
-            player.configure({
-                drm: {
-                    clearKeys: {
-                        [keyId]: key
-                    }
-                },
+            // Enable native HLS for Safari
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+            const playerConfig = {
                 streaming: {
                     startAtSegmentBoundary: true,
                     ignoreTextStreamFailures: true,
@@ -149,7 +147,7 @@
                     bufferBehind: 60,
                     autoLowLatencyMode: true,
                     lowLatencyMode: true,
-                    useNativeHlsOnSafari: true,
+                    useNativeHlsOnSafari: isSafari,
                     jumpLargeGaps: true,
                     inaccurateManifestTolerance: 0.3,
                     stallEnabled: false
@@ -170,7 +168,18 @@
                         bitrateSafetyMargin: 1.2
                     }
                 }
-            });
+            };
+
+            // Add ClearKey DRM if key is provided
+            if (keyId && key) {
+                playerConfig.drm = {
+                    clearKeys: {
+                        [keyId]: key
+                    }
+                };
+            }
+
+            player.configure(playerConfig);
 
             ui.configure({
                 controlPanelElements: ["play_pause", "mute", "volume", "spacer", "time_and_duration", "quality", "fullscreen", "overflow_menu"],
@@ -189,35 +198,17 @@
             window.player = player;
             window.ui = ui;
 
-            player.addEventListener("error", onPlayerErrorEvent);
-            controls.addEventListener("error", onUIErrorEvent);
+            player.addEventListener("error", (e) => console.error("Player error:", e.detail));
+            controls.addEventListener("error", (e) => console.error("UI error:", e.detail));
 
             try {
                 await player.load(manifestUrl);
-                console.log("The video has been loaded!");
-            } catch (error) {
-                onPlayerError(error);
+                console.log("Video loaded!");
+            } catch (e) {
+                console.error("Load failed", e);
+                alert("Failed to load the video. Check console for details.");
             }
         }
-
-        function onPlayerErrorEvent(event) {
-            onPlayerError(event.detail);
-        }
-
-        function onPlayerError(error) {
-            console.error("Player Error - Code:", error.code, "Details:", error);
-        }
-
-        function onUIErrorEvent(event) {
-            onPlayerError(event.detail);
-        }
-
-        function initFailed(error) {
-            console.error("Unable to load the Shaka UI library!", error);
-        }
-
-        document.addEventListener("shaka-ui-loaded", init);
-        document.addEventListener("shaka-ui-load-failed", initFailed);
 
         function updateViews() {
             const min = 1.01;
@@ -226,7 +217,9 @@
             document.getElementById('view').textContent = views;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener("shaka-ui-loaded", init);
+        document.addEventListener("shaka-ui-load-failed", () => console.error("Shaka UI failed to load"));
+        document.addEventListener("DOMContentLoaded", () => {
             updateViews();
             setInterval(updateViews, 5000);
         });
