@@ -1,26 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Video Player Setup</title>
-</head>
-<body>
-  <h2>Enter Video Info</h2>
-  <form id="videoForm">
-    <label>Manifest URL: <input type="text" id="url" required></label><br><br>
-    <label>Key ID: <input type="text" id="keyId" ></label><br><br>
-    <label>Key: <input type="text" id="key" ></label><br><br>
-    <button type="submit">Play Video</button>
-  </form>
 
-  <script>
-    document.getElementById('videoForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const url = document.getElementById('url');
-      const keyId = document.getElementById('keyId');
-      const key = document.getElementById('key');
-      window.location.href = `play.html?url=${url}&keyId=${keyId}&key=${key}`;
-    });
-  </script>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video Player Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background: #1e1e1e;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0097a7;
+        }
+
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbb;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Enter Video Info</h2>
+    <form id="videoForm">
+        <label>
+            Manifest URL:
+            <input type="text" id="url" placeholder="https://example.com/video.mpd" required />
+        </label>
+        <label>
+            Key ID:
+            <input type="text" id="keyId" placeholder="Optional for unencrypted videos" />
+        </label>
+        <label>
+            Key:
+            <input type="text" id="key" placeholder="Optional for unencrypted videos" />
+        </label>
+        <button type="submit">Play Video</button>
+    </form>
+
+    <div class="note">
+        Note: If Key ID and Key are not provided, the video will attempt to play without DRM.
+    </div>
+
+    <script>
+        document.getElementById('videoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const url = encodeURIComponent(document.getElementById('url').value.trim());
+            const keyId = encodeURIComponent(document.getElementById('keyId').value.trim());
+            const key = encodeURIComponent(document.getElementById('key').value.trim());
+
+            // Build query string conditionally
+            let query = `play.html?url=${url}`;
+            if (keyId && key) {
+                query += `&keyId=${keyId}&key=${key}`;
+            }
+
+            window.location.href = query;
+        });
+    </script>
 </body>
+
 </html>
