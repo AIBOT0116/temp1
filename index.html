@@ -58,22 +58,22 @@
     <h2>Enter Video Info</h2>
     <form id="videoForm">
         <label>
-            Manifest URL:
-            <input type="text" id="url" placeholder="https://example.com/video.mpd" required />
+            Manifest URL (.mpd or .m3u8):
+            <input type="text" id="url" placeholder="https://example.com/video.mpd or .m3u8" required />
         </label>
         <label>
             Key ID:
-            <input type="text" id="keyId" placeholder="Optional for unencrypted videos" />
+            <input type="text" id="keyId" placeholder="Optional for encrypted videos" />
         </label>
         <label>
             Key:
-            <input type="text" id="key" placeholder="Optional for unencrypted videos" />
+            <input type="text" id="key" placeholder="Optional for encrypted videos" />
         </label>
         <button type="submit">Play Video</button>
     </form>
 
     <div class="note">
-        Note: If Key ID and Key are not provided, the video will attempt to play without DRM.
+        Note: Supports both MPEG-DASH (.mpd) and HLS (.m3u8). DRM fields are optional.
     </div>
 
     <script>
@@ -83,7 +83,6 @@
             const keyId = document.getElementById('keyId').value.trim();
             const key = document.getElementById('key').value.trim();
 
-            // Build query string manually, no encoding
             let query = `play.html?url=${url}`;
             if (keyId && key) {
                 query += `&keyId=${keyId}&key=${key}`;
