@@ -8,17 +8,17 @@
   <h2>Enter Video Info</h2>
   <form id="videoForm">
     <label>Manifest URL: <input type="text" id="url" required></label><br><br>
-    <label>Key ID: <input type="text" id="keyId" required></label><br><br>
-    <label>Key: <input type="text" id="key" required></label><br><br>
+    <label>Key ID: <input type="text" id="keyId" ></label><br><br>
+    <label>Key: <input type="text" id="key" ></label><br><br>
     <button type="submit">Play Video</button>
   </form>
 
   <script>
     document.getElementById('videoForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      const url = encodeURIComponent(document.getElementById('url').value);
-      const keyId = encodeURIComponent(document.getElementById('keyId').value);
-      const key = encodeURIComponent(document.getElementById('key').value);
+      const url = document.getElementById('url');
+      const keyId = document.getElementById('keyId');
+      const key = document.getElementById('key');
       window.location.href = `play.html?url=${url}&keyId=${keyId}&key=${key}`;
     });
   </script>
