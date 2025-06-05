@@ -5,51 +5,22 @@
     <title>Free Video Player</title>
     <link rel="shortcut icon" href="https://img.icons8.com/?size=48&id=15162&format=png" type="image/x-icon">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.14.9/dist/shaka-player.ui.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/shaka-player@4.14.9/dist/controls.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/shaka-player/dist/shaka-player.ui.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/shaka-player/dist/controls.min.css" rel="stylesheet">
     <style>
         .shaka-overflow-menu,
         .shaka-settings-menu {
-            background-color: rgba(0, 0, 0, .64);
+            background-color: rgba(0, 0, 0, 0.64);
             backdrop-filter: blur(10px);
-            border-radius: 8px
-        }
-
-        .shaka-overflow-menu {
-            color: #999
-        }
-
-        .shaka-overflow-menu button {
-            padding: 7px 6px
+            border-radius: 8px;
         }
 
         .shaka-overflow-menu button:hover,
         .shaka-settings-menu button:hover {
-            background-color: rgba(255, 255, 255, .1)
+            background-color: rgba(255, 255, 255, 0.1)
         }
 
-        .shaka-overflow-button-label {
-            color: #f5f5f5
-        }
-
-        .shaka-current-selection-span {
-            color: #cacaca
-        }
-
-        .material-icons-round {
-            color: #e6e6e6
-        }
-
-        .shaka-settings-menu {
-            color: #fff;
-            padding: 10px 0
-        }
-
-        .shaka-settings-menu button {
-            color: #fff
-        }
-
-        .shaka-spinner-path {
+        .shaka-spinner svg {
             stroke: #fff
         }
 
@@ -96,7 +67,7 @@
             position: absolute;
             right: 40px;
             pointer-events: none;
-            z-index: 10
+            z-index: 10;
         }
 
         .text-overlay {
@@ -106,49 +77,49 @@
             border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 4px
+            gap: 4px;
         }
 
         .text-overlay span {
             font-size: 12px;
             background-color: rgba(255, 255, 255, .3);
             padding: 3px 5px;
-            border-radius: 3px
+            border-radius: 3px;
         }
 
         .views {
             top: 67px;
             color: rgba(255, 255, 255, .9);
-            font-size: 15px
+            font-size: 15px;
         }
 
         @media only screen and (min-width:320px) and (max-width:940px) {
 
             .text-overlay,
             .views {
-                right: 20px;
-                opacity: 0.9;
+                right: 25px;
+                opacity: .8;
             }
 
             .text-overlay {
-                top: 20px;
-                font-size: 15px;
-                gap: 3px
+                top: 7px;
+                font-size: 13px;
+                gap: 2px;
             }
 
             .text-overlay span {
-                font-size: 10px
+                font-size: 9px;
             }
 
             .views {
-                font-size: 12px;
-                top: 40px
+                font-size: 11px;
+                top: 24px;
             }
         }
 
         @media only screen and (min-width:450px) and (max-width:940px) {
             .shaka-play-button {
-                padding: calc(12% / 2)
+                padding: calc(12% / 3);
             }
         }
     </style>
@@ -157,10 +128,10 @@
 <body bgcolor="black" style="margin:0">
     <div data-shaka-player-container style="position:absolute;top:0;left:0;width:100%;height:100%">
         <video autoplay playsinline data-shaka-player id="video"
-            poster="https://i.vimeocdn.com/video/1954341306-a080a511e7080f309b303845339d4d6ffe2ff7a48351f06116adee97d934ffe1-d?mw=900&mh=506"
+            poster="https://i.vimeocdn.com/video/1954341306-a080a511e7080f309b303845339d4d6ffe2ff7a48351f06116adee97d934ffe1-d"
             style="width:100%;height:100%"></video>
         <div class="text-overlay">FreeStream<span>Live</span></div>
-        <div class="views"><span id="view">0</span>Cr Views</div>
+        <div class="views"><span id="view">1.01</span>Cr Views</div>
     </div>
 
     <script>
@@ -211,14 +182,18 @@
 
             ui.configure({
                 controlPanelElements: ["play_pause", "mute", "volume", "spacer", "time_and_duration", "quality", "fullscreen", "overflow_menu"],
-                volumeBarColors: {
-                    base: 'rgba(50, 50, 50, 0.4)',
-                    level: 'rgba(225, 225, 225, 0.8)'
-                },
                 seekBarColors: {
                     base: 'rgba(100, 100, 100, 0.6)',
-                    buffered: 'rgba(200, 200, 200, 0.5)',
+                    buffered: 'rgba(200, 200, 200, 0.7)',
                     played: 'rgba(229, 9, 20, 1)'
+                },
+                // Add Quality Marks
+                qualityMarks: {
+                    '720': 'HD',
+                    '1080': 'FHD',
+                    '1440': '2K',
+                    '2160': '4K',
+                    '4320': '8K',
                 },
                 enableKeyboardPlaybackControls: true
             });
