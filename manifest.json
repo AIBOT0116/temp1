@@ -1,8 +1,8 @@
 {
     "name": "Free Video Player",
     "short_name": "FreeStream",
-    "description": "A free, live-stream video player using Shaka Player.",
-    "start_url": "/",
+    "description": "A free, live-stream video player.",
+    "start_url": "/play.html?url=https://d1g8wgjurz8via.cloudfront.net/bpk-tv/Zeetv/default/manifest.mpd&keyId=ed068cf84f0640ccbc7c0e395c0a272e&key=bb722190f2bb446391020411a7d0828b",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
