@@ -3,7 +3,21 @@
 
 <head>
     <title>Free Video Player</title>
-    <link rel="shortcut icon" href="https://img.icons8.com/?size=48&id=15162&format=png" type="image/x-icon">
+    <!-- Favicon (Browser Tabs) -->
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/play.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/play.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/play.png">
+
+    <!-- Apple Touch Icon (iPhone/iPad Home Screen) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/play.png">
+
+    <!-- Android/Chrome (PWA Install Icon) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/play.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/play.png">
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.jsdelivr.net/npm/shaka-player/dist/shaka-player.ui.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/shaka-player/dist/controls.min.css" rel="stylesheet">
@@ -226,7 +240,14 @@
             updateViews();
             setInterval(updateViews, 5000);
         });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then((reg) => console.log('Service Worker registered!', reg))
+                .catch((err) => console.error('Service Worker registration failed:', err));
+        }
     </script>
+
 </body>
 
 </html>
