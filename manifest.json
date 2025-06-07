@@ -1,0 +1,22 @@
+{
+    "name": "Free Video Player",
+    "short_name": "FreeStream",
+    "description": "A free, live-stream video player using Shaka Player.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "assets/play.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/play.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
